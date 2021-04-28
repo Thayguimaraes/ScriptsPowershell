@@ -21,6 +21,7 @@ function Initialize-MainPrograms {
     Invoke-Item -Path "C:\windows\system32\WindowsPowerShell\v1.0\powershell.exe"
     Invoke-Item -Path "C:\Program Files (x86)\TeamViewer\TeamViewer.exe"
     Invoke-Item -Path "C:\windows\system32\dsa.msc"
+    Invoke-Item -Path "C:\Program Files (x86)\Microsoft Office\root\Office16\OUTLOOK.EXE"
     C:\Users\de0186679\AppData\Local\Microsoft\Teams\Update.exe --processStart "Teams.exe"
     wt
 }
@@ -29,25 +30,36 @@ Initialize-MainPrograms
 
 
 function Close-AllPrograms{
-
     Stop-Computer -ComputerName localhost
 }
 
 Close-AllPrograms
 
-
 function hahah{
     import-module ActiveDirectory
-    $users = Get-ADUser -Filter * -SearchBase ""
+    $users = Get-ADUser -Filter * -SearchBase "1-DEP_COMERCIAL_COMERCIAL-DIRECIONAL-ENGENHARIA-MG_G"
     $sourceUser = Get-ADUser -Identity user.a -Properties MemberOf
     $sourceGroups = $sourceUser.MemberOf
     
     ForEach($group in $sourceGroups){
         $thisgroup = $group.split(",")
-        $thisgroup
+        $thisgroup | Add-ADGroupMember -Members 
     }
 }
 
+function teste{
+    param (
+        $OptionalParameters
+    )
+
+    $users = Get-Content -Path "C:\Users\de0186679\Desktop\Arquivos\de.txt"
+    $groups = Get-ADUser -Identity de0184921 -Properties MemberOf
+    $group = $groups.MemberOf[0]
+
+    ForEach($user in $users){
+        Add-ADGroupMember -Members $user -Identity $group
+    }
+}
 
 function hihi{
     $newusers = Get-Content -Path ""
@@ -63,10 +75,6 @@ function hihi{
         
     }
 }
-
-
-
-
 
 <#
 # Add a parameter called username.
@@ -93,9 +101,9 @@ function hihi{
  # Generate a random password that is 12-characters long with five non-AlphaNumeric characters.
  $randomPassword = [System.Web.Security.Membership]::GeneratePassword(12, 5)
  
- # Convert the plain text password to a secure string.
- $newPassword = $randomPassword | ConvertTo-SecureString -AsPlainText -Force
- 
+ # Convert the plain text password to a secure strsword | ConvertTo-SecureString -AsPlainText -Force
+ ing.
+ $newPassword = $randomPas
  # Try to reset the user's password
  try {
      # Reset the user's password
