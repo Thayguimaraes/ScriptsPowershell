@@ -129,4 +129,26 @@ function hihi{
 
 Get-Content .\users.txt | ForEach-Object {.\Reset-ADUserPassword.ps1 -username $PSItem}
 
+
+
+## Remove the all users' cache. This reads all user subdirectories in each user folder matching
+## all folder names in the cache and removes them all
+Get-ChildItem -Path "C:\Users\*\AppData\Roaming\Microsoft\Teams\*" -Directory | `
+	Where-Object Name -in ('application cache','blob_storage','databases','GPUcache','IndexedDB','Local Storage','tmp') | `
+	ForEach {Remove-Item $_.FullName -Recurse -Force}
+
+## Remove every user's cache. This reads all subdirectories in the $env:APPDATA\Microsoft\Teams folder matching
+## all folder names in the cache and removes them all
+Get-ChildItem -Path "$env:APPDATA\Microsoft\Teams\*" -Directory | `
+	Where-Object Name -in ('application cache','blob storage','databases','GPUcache','IndexedDB','Local Storage','tmp') | `
+	ForEach {Remove-Item $_.FullName -Recurse -Force}
+
+Get-DnsClientCache 
+Get-DnsClient
+
+$dest = "http://resources.kodakalaris.com/docimaging/drivers/ST_i900_v1.8.52.exe"
+$proxy = ([System.Net.WebRequest]::GetSystemWebproxy()).GetProxy($dest)
+Invoke-WebRequest http://resources.kodakalaris.com/docimaging/drivers/ST_i900_v1.8.52.exe -Proxy $proxy -ProxyUseDefaultCredentials
+
+Start-Process powershell.exe -Credential $Credential -ArgumentList ("-file $args")
 #>
