@@ -47,19 +47,21 @@ function hahah{
     }
 }
 
-function teste{
-    param (
-        $OptionalParameters
-    )
+function Add-ADMultipleUsersInAGroup($Path, $Identity){
+   # param (
+    #    $OptionalParameters
+    #)
 
-    $users = Get-Content -Path "C:\Users\de0186679\Desktop\Arquivos\de.txt"
-    $groups = Get-ADUser -Identity de0184921 -Properties MemberOf
+    $users = Get-Content -Path $Path
+    $groups = Get-ADUser -Identity $Identity -Properties MemberOf
     $group = $groups.MemberOf[0]
 
     ForEach($user in $users){
         Add-ADGroupMember -Members $user -Identity $group
     }
 }
+
+Add-ADMultipleUsersInAGroup
 
 function hihi{
     $newusers = Get-Content -Path ""
