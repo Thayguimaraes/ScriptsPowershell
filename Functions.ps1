@@ -1,5 +1,5 @@
 
-function Mirror {
+function Copy-ADGroupFromMirror {
     param (
         $OptionalParameters
     )
@@ -12,9 +12,9 @@ function Mirror {
     $groups | Add-ADGroupMember -Members $DesiredId
 }
 
-Mirror
+Copy-ADGroupFromMirror
 
-function initPrograms {
+function Initialize-MainPrograms {
     Invoke-Item -Path "C:\Users\de0186679\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Avaya\Avaya Aura Agent Desktop 6.0.appref-ms"
     Invoke-Item -Path "C:\Program Files (x86)\Avaya\Avaya Communicator\AvayaCommunicator.exe"
     Invoke-Item -Path "C:\Program Files\Google\Chrome\Application\chrome.exe"
@@ -25,15 +25,47 @@ function initPrograms {
     wt
 }
 
-initPrograms
+Initialize-MainPrograms
 
 
-function closePrograms{
+function Close-AllPrograms{
 
     Stop-Computer -ComputerName localhost
 }
 
-closePrograms
+Close-AllPrograms
+
+
+function hahah{
+    import-module ActiveDirectory
+    $users = Get-ADUser -Filter * -SearchBase ""
+    $sourceUser = Get-ADUser -Identity user.a -Properties MemberOf
+    $sourceGroups = $sourceUser.MemberOf
+    
+    ForEach($group in $sourceGroups){
+        $thisgroup = $group.split(",")
+        $thisgroup
+    }
+}
+
+
+function hihi{
+    $newusers = Get-Content -Path ""
+    
+    ForEach($newuser in $newusers){
+        $path = ""
+        $password = Get-Random
+        $firstname = $newuser.split(" ")[0]
+        $lastname = $newuser.split("")[1]
+        $username = "$firstname.$lastname"
+        
+        New-ADUser -Name "$newuser" -GivenName "$firstname" -Surname "$lastname" -SamAccountName $username -UserPrincipalName $username -AccountPassword $password -Enabled $True
+        
+    }
+}
+
+
+
 
 
 <#
