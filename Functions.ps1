@@ -129,8 +129,6 @@ function hihi{
 
 Get-Content .\users.txt | ForEach-Object {.\Reset-ADUserPassword.ps1 -username $PSItem}
 
-
-
 ## Remove the all users' cache. This reads all user subdirectories in each user folder matching
 ## all folder names in the cache and removes them all
 Get-ChildItem -Path "C:\Users\*\AppData\Roaming\Microsoft\Teams\*" -Directory | `
