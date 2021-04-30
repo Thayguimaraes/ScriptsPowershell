@@ -13,6 +13,14 @@ function Copy-ADGroupFromMirror {
 
 Copy-ADGroupFromMirror
 
+$reference =  Get-ADUser -Identity DE6400256 -Properties MemberOf 
+$groups = $reference.MemberOf
+
+$separate = $groups | Select-String -Pattern "SafeDoc_431"
+# $separate | Add-ADGroupMember -Members DE8900060
+
+[AD]$groups.GetType()
+
 function Initialize-MainPrograms {
     Invoke-Item -Path "C:\Users\de0186679\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Avaya\Avaya Aura Agent Desktop 6.0.appref-ms"
     Invoke-Item -Path "C:\Program Files (x86)\Avaya\Avaya Communicator\AvayaCommunicator.exe"
@@ -100,13 +108,20 @@ function Get-TargetResource ($Path) {
 
     Import-Csv -Path $Path | ForEach-Object { 
         New-Msoluser -UserPrincipalName $_.UserPrincipalName 
-                     -FirstName $_.FirstName -LastName $_.LastName
-                     -Department $_.Department -Title $_.Title 
-                     -Office $_.Office -PhoneNumber $_.PhoneNumber
-                     -Fax $_.Fax -StreetAddress $_.StreetAddress
-                     -MobilePhone $_.MobilePhone -City $_.City
-                     -State $_.State -Country $_.Country 
-                     -DisplayName $_.DisplayName -PostalCode $_.PostalCode
+                     -FirstName $_.FirstName 
+                     -LastName $_.LastName
+                     -Department $_.Department 
+                     -Title $_.Title 
+                     -Office $_.Office 
+                     -PhoneNumber $_.PhoneNumber
+                     -Fax $_.Fax 
+                     -StreetAddress $_.StreetAddress
+                     -MobilePhone $_.MobilePhone 
+                     -City $_.City
+                     -State $_.State 
+                     -Country $_.Country 
+                     -DisplayName $_.DisplayName 
+                     -PostalCode $_.PostalCode
                      -UsageLocation ""
     }
 }
