@@ -1,16 +1,25 @@
 
 function Copy-ADGroupFromMirror {
     param ()
-    
+    Set-ExecutionPolicy Unrestricted
+
     $MirrorId = Read-Host -Prompt 'Digite o DE espelho: '
     $DesiredId = Read-Host -Prompt 'Digite o DE de destino: '
 
-    $reference = Get-ADUser -Identity $MirrorId -Properties MemberOf 
+    $reference = Get-ADUser -Identity $MirrorId -Properties MemberOf
     $groups = $reference.MemberOf
     $groups | Add-ADGroupMember -Members $DesiredId
 }
 
 Copy-ADGroupFromMirror
+
+$reference =  Get-ADUser -Identity DE6400256 -Properties MemberOf
+$groups = $reference.MemberOf
+
+$separate = $groups | Select-String -Pattern "SafeDoc_431"
+# $separate | Add-ADGroupMember -Members DE8900060
+
+[AD]$groups.GetType()
 
 function Initialize-MainPrograms {
     Invoke-Item -Path "C:\Users\de0186679\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Avaya\Avaya Aura Agent Desktop 6.0.appref-ms"
@@ -38,10 +47,10 @@ function hahah{
     $users = Get-ADUser -Filter * -SearchBase "1-DEP_COMERCIAL_COMERCIAL-DIRECIONAL-ENGENHARIA-MG_G"
     $sourceUser = Get-ADUser -Identity user.a -Properties MemberOf
     $sourceGroups = $sourceUser.MemberOf
-    
+
     ForEach($group in $sourceGroups){
         $thisgroup = $group.split(",")
-        $thisgroup | Add-ADGroupMember -Members 
+        $thisgroup | Add-ADGroupMember -Members
     }
 }
 
@@ -61,24 +70,60 @@ Add-ADMultipleUsersInAGroup
 
 function hihi{
     $newusers = Get-Content -Path ""
-    
+
     ForEach($newuser in $newusers){
         $path = ""
         $password = Get-Random
         $firstname = $newuser.split(" ")[0]
         $lastname = $newuser.split("")[1]
         $username = "$firstname.$lastname"
-        
+
         New-ADUser -Name "$newuser" -GivenName "$firstname" -Surname "$lastname" -SamAccountName $username -UserPrincipalName $username -AccountPassword $password -Enabled $True
-        
+
     }
 }
 
-<#
-# Add a parameter called username.
- param (
-     $username
- )
+function Connect-office365{
+    $credential = Get-Credential
+    $urlOutlook = "https://ps.outlook.com/powershell"
+
+    $Session = New-PSSession `
+            -ConfigurationName Microsoft.Exchange `
+            -ConnectionUri  $urlOutlook `
+            -Credential $credential `
+            -Authentication Basic `
+            -AllowRedirection
+
+    Import-module msonline
+    Connect-MsolService -Credential $credential
+}
+
+function Get-TargetResource ($Path) {
+    # TODO: Add parameters here
+    # Make sure to use the same parameters for
+    # Get-TargetResource, Set-TargetResource, and Test-TargetResource
+    param ()
+
+    Import-Csv -Path $Path | ForEach-Object {
+        New-Msoluser -UserPrincipalName $_.UserPrincipalName
+                     -FirstName $_.FirstName
+                     -LastName $_.LastName
+                     -Department $_.Department
+                     -Title $_.Title
+                     -Office $_.Office
+                     -PhoneNumber $_.PhoneNumber
+                     -Fax $_.Fax
+                     -StreetAddress $_.StreetAddress
+                     -MobilePhone $_.MobilePhone
+                     -City $_.City
+                     -State $_.State
+                     -Country $_.Country
+                     -DisplayName $_.DisplayName
+                     -PostalCode $_.PostalCode
+                     -UsageLocation ""
+    }
+}
+
 
  # If the user did not provide a username value, show a message and exit the script.
  if (-not($username)) {
@@ -95,10 +140,10 @@ function hihi{
      Write-Host $_.Exception.Message
      return $null
  }
- 
+
  # Generate a random password that is 12-characters long with five non-AlphaNumeric characters.
  $randomPassword = [System.Web.Security.Membership]::GeneratePassword(12, 5)
- 
+
  # Convert the plain text password to a secure strsword | ConvertTo-SecureString -AsPlainText -Force
  ing.
  $newPassword = $randomPas
@@ -137,7 +182,7 @@ Get-ChildItem -Path "$env:APPDATA\Microsoft\Teams\*" -Directory | `
 	Where-Object Name -in ('application cache','blob storage','databases','GPUcache','IndexedDB','Local Storage','tmp') | `
 	ForEach {Remove-Item $_.FullName -Recurse -Force}
 
-Get-DnsClientCache 
+Get-DnsClientCache
 Get-DnsClient
 
 $dest = "http://resources.kodakalaris.com/docimaging/drivers/ST_i900_v1.8.52.exe"
