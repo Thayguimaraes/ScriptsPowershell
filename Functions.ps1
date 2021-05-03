@@ -78,14 +78,22 @@ function hihi{
         $lastname = $newuser.split("")[1]
         $username = "$firstname.$lastname"
 
-        New-ADUser -Name "$newuser" -GivenName "$firstname" -Surname "$lastname" -SamAccountName $username -UserPrincipalName $username -AccountPassword $password -Enabled $True
+        New-ADUser -Name "$newuser" `
+                   -GivenName "$firstname" ` 
+                   -Surname "$lastname" `
+                   -SamAccountName $username ` 
+                   -UserPrincipalName $username ` 
+                   -AccountPassword $password
+        
+        
+        $password -Enabled $True
 
     }
 }
 
 function Connect-office365{
     $credential = Get-Credential
-    $urlOutlook = "https://ps.outlook.com/powershell"
+    $urlOutlook = "https://ps.outlook.com/powershell"=
 
     $Session = New-PSSession `
             -ConfigurationName Microsoft.Exchange `
@@ -105,89 +113,86 @@ function Get-TargetResource ($Path) {
     param ()
 
     Import-Csv -Path $Path | ForEach-Object {
-        New-Msoluser -UserPrincipalName $_.UserPrincipalName
-                     -FirstName $_.FirstName
-                     -LastName $_.LastName
-                     -Department $_.Department
-                     -Title $_.Title
-                     -Office $_.Office
-                     -PhoneNumber $_.PhoneNumber
-                     -Fax $_.Fax
-                     -StreetAddress $_.StreetAddress
-                     -MobilePhone $_.MobilePhone
-                     -City $_.City
-                     -State $_.State
-                     -Country $_.Country
-                     -DisplayName $_.DisplayName
-                     -PostalCode $_.PostalCode
+        New-Msoluser -UserPrincipalName $_.UserPrincipalName `
+                     -FirstName $_.FirstName `
+                     -LastName $_.LastName ` 
+                     -Department $_.Department `
+                     -Title $_.Title `
+                     -Office $_.Office `
+                     -PhoneNumber $_.PhoneNumber `
+                     -Fax $_.Fax `
+                     -StreetAddress $_.StreetAddress `
+                     -MobilePhone $_.MobilePhone `
+                     -City $_.City `
+                     -State $_.State `
+                     -Country $_.Country `
+                     -DisplayName $_.DisplayName `
+                     -PostalCode $_.PostalCode `
                      -UsageLocation ""
     }
 }
 
 
- # If the user did not provide a username value, show a message and exit the script.
- if (-not($username)) {
-     Write-Host "You did not enter a username. Exiting script"
-     return $null
- }
+function reset-password{
+    $newPassword = $randomPas
+    # Try to reset the user's password
+    try {
+        # Reset the user's password
+        Set-ADAccountPassword -Identity $username -NewPassword $newPassword -Reset -ErrorAction Stop
+        # Force the user to change password during the next log in
+        Set-ADuser -Identity $username -ChangePasswordAtLogon $true
+        # If the password reset was successfull, return the username and new password.
+        [pscustomobject]@{
+            Username = $username
+            NewPassword = $randomPassword
+        }
+    }
+    # If the password reset failed, show a message and exit the script.
+    catch {
+        Write-Host "There was an error performing the password reset. Please consult the error below."
+        Write-host $_.Exception.Message
+        return $null
+    }
+}
 
- # Check if the user exists or if the username is valid. Do not show the result on the screen.
- try {
-     $null = Get-ADUser -Identity $username -ErrorAction Stop
- }
- # If the username cannot be found, show a message and exit the script.
- catch {
-     Write-Host $_.Exception.Message
-     return $null
- }
 
- # Generate a random password that is 12-characters long with five non-AlphaNumeric characters.
- $randomPassword = [System.Web.Security.Membership]::GeneratePassword(12, 5)
+function clear-TeamsCache{
+    ## Remove the all users' cache. This reads all user subdirectories in each user folder matching
+    ## all folder names in the cache and removes them all
+    Get-ChildItem -Path "C:\Users\*\AppData\Roaming\Microsoft\Teams\*" `
+                  -Directory | `
+                  Where-Object Name -in ('application cache','blob_storage','databases','GPUcache','IndexedDB','Local Storage','tmp') | `
+                  ForEach {Remove-Item $_.FullName -Recurse -Force}
+    
+    
 
- # Convert the plain text password to a secure strsword | ConvertTo-SecureString -AsPlainText -Force
+    ## Remove every user's cache. This reads all subdirectories in the $env:APPDATA\Microsoft\Teams folder matching
+    ## all folder names in the cache and removes them all
+    Get-ChildItem -Path "$env:APPDATA\Microsoft\Teams\*" `
+                  -Directory | `
+                  Where-Object Name -in ('application cache','blob storage','databases','GPUcache','IndexedDB','Local Storage','tmp') | `
+                  ForEach {Remove-Item $_.FullName -Recurse -Force}
+}
+
+function download{
+    $dest = "http://resources.kodakalaris.com/docimaging/drivers/ST_i900_v1.8.52.exe"
+    $proxy = ([System.Net.WebRequest]::GetSystemWebproxy()).GetProxy($dest)
+    Invoke-WebRequest http://resources.kodakalaris.com/docimaging/drivers/ST_i900_v1.8.52.exe `
+                      -Proxy $proxy `
+                      -ProxyUseDefaultCredentials
+}
+
+<#
+ Convert the plain text password to a secure strsword | ConvertTo-SecureString -AsPlainText -Force
  ing.
- $newPassword = $randomPas
- # Try to reset the user's password
- try {
-     # Reset the user's password
-     Set-ADAccountPassword -Identity $username -NewPassword $newPassword -Reset -ErrorAction Stop
-     # Force the user to change password during the next log in
-     Set-ADuser -Identity $username -ChangePasswordAtLogon $true
-     # If the password reset was successfull, return the username and new password.
-     [pscustomobject]@{
-         Username = $username
-         NewPassword = $randomPassword
-     }
- }
- # If the password reset failed, show a message and exit the script.
- catch {
-     Write-Host "There was an error performing the password reset. Please consult the error below."
-     Write-host $_.Exception.Message
-     return $null
- }
 
 @('user_a','user_b') | ForEach-Object {.\Reset-ADUserPassword.ps1 -username $PSItem}
 
 Get-Content .\users.txt | ForEach-Object {.\Reset-ADUserPassword.ps1 -username $PSItem}
 
-## Remove the all users' cache. This reads all user subdirectories in each user folder matching
-## all folder names in the cache and removes them all
-Get-ChildItem -Path "C:\Users\*\AppData\Roaming\Microsoft\Teams\*" -Directory | `
-	Where-Object Name -in ('application cache','blob_storage','databases','GPUcache','IndexedDB','Local Storage','tmp') | `
-	ForEach {Remove-Item $_.FullName -Recurse -Force}
-
-## Remove every user's cache. This reads all subdirectories in the $env:APPDATA\Microsoft\Teams folder matching
-## all folder names in the cache and removes them all
-Get-ChildItem -Path "$env:APPDATA\Microsoft\Teams\*" -Directory | `
-	Where-Object Name -in ('application cache','blob storage','databases','GPUcache','IndexedDB','Local Storage','tmp') | `
-	ForEach {Remove-Item $_.FullName -Recurse -Force}
 
 Get-DnsClientCache
 Get-DnsClient
-
-$dest = "http://resources.kodakalaris.com/docimaging/drivers/ST_i900_v1.8.52.exe"
-$proxy = ([System.Net.WebRequest]::GetSystemWebproxy()).GetProxy($dest)
-Invoke-WebRequest http://resources.kodakalaris.com/docimaging/drivers/ST_i900_v1.8.52.exe -Proxy $proxy -ProxyUseDefaultCredentials
 
 Start-Process powershell.exe -Credential $Credential -ArgumentList ("-file $args")
 #>
