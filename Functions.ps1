@@ -1,8 +1,6 @@
 
 function Copy-ADGroupFromMirror {
-    param (
-        $OptionalParameters
-    )
+    param ()
     
     $MirrorId = Read-Host -Prompt 'Digite o DE espelho: '
     $DesiredId = Read-Host -Prompt 'Digite o DE de destino: '
@@ -48,9 +46,7 @@ function hahah{
 }
 
 function Add-ADMultipleUsersInAGroup($Path, $Identity){
-   # param (
-    #    $OptionalParameters
-    #)
+    param ()
 
     $users = Get-Content -Path $Path
     $groups = Get-ADUser -Identity $Identity -Properties MemberOf
