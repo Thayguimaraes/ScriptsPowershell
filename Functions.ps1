@@ -1,6 +1,5 @@
 
 function Copy-ADGroupFromMirror {
-    param ()
     Set-ExecutionPolicy Unrestricted
 
     $MirrorId = Read-Host -Prompt 'Digite o DE espelho: '
@@ -17,7 +16,7 @@ $reference =  Get-ADUser -Identity DE6400256 -Properties MemberOf
 $groups = $reference.MemberOf
 
 $separate = $groups | Select-String -Pattern "SafeDoc_431"
-# $separate | Add-ADGroupMember -Members DE8900060
+$separate | Add-ADGroupMember -Members DE8900060
 
 [AD]$groups.GetType()
 
@@ -42,6 +41,9 @@ function Close-AllPrograms{
 
 Close-AllPrograms
 
+
+(Get-WmiObject -Namespace root/WMI -Class WmiMonitorBrightnessMethods).WmiSetBrightness(1,100)
+
 function hahah{
     import-module ActiveDirectory
     $users = Get-ADUser -Filter * -SearchBase "1-DEP_COMERCIAL_COMERCIAL-DIRECIONAL-ENGENHARIA-MG_G"
@@ -55,8 +57,6 @@ function hahah{
 }
 
 function Add-ADMultipleUsersInAGroup($Path, $Identity){
-    param ()
-
     $users = Get-Content -Path $Path
     $groups = Get-ADUser -Identity $Identity -Properties MemberOf
     $group = $groups.MemberOf[0]
@@ -79,21 +79,19 @@ function hihi{
         $username = "$firstname.$lastname"
 
         New-ADUser -Name "$newuser" `
-                   -GivenName "$firstname" ` 
+                   -GivenName "$firstname" `
                    -Surname "$lastname" `
-                   -SamAccountName $username ` 
-                   -UserPrincipalName $username ` 
-                   -AccountPassword $password
-        
-        
-        $password -Enabled $True
+                   -SamAccountName $username `
+                   -UserPrincipalName $username `
+                   -AccountPassword $password `
+                   -Enabled $True
 
     }
 }
 
 function Connect-office365{
     $credential = Get-Credential
-    $urlOutlook = "https://ps.outlook.com/powershell"=
+    $urlOutlook = "https://ps.outlook.com/powershell"
 
     $Session = New-PSSession `
             -ConfigurationName Microsoft.Exchange `
@@ -110,12 +108,11 @@ function Get-TargetResource ($Path) {
     # TODO: Add parameters here
     # Make sure to use the same parameters for
     # Get-TargetResource, Set-TargetResource, and Test-TargetResource
-    param ()
 
     Import-Csv -Path $Path | ForEach-Object {
         New-Msoluser -UserPrincipalName $_.UserPrincipalName `
                      -FirstName $_.FirstName `
-                     -LastName $_.LastName ` 
+                     -LastName $_.LastName `
                      -Department $_.Department `
                      -Title $_.Title `
                      -Office $_.Office `
@@ -162,7 +159,7 @@ function clear-TeamsCache{
     Get-ChildItem -Path "C:\Users\*\AppData\Roaming\Microsoft\Teams\*" `
                   -Directory | `
                   Where-Object Name -in ('application cache','blob_storage','databases','GPUcache','IndexedDB','Local Storage','tmp') | `
-                  ForEach {Remove-Item $_.FullName -Recurse -Force}
+                  ForEach-Object {Remove-Item $_.FullName -Recurse -Force}
     
     
 
@@ -171,7 +168,7 @@ function clear-TeamsCache{
     Get-ChildItem -Path "$env:APPDATA\Microsoft\Teams\*" `
                   -Directory | `
                   Where-Object Name -in ('application cache','blob storage','databases','GPUcache','IndexedDB','Local Storage','tmp') | `
-                  ForEach {Remove-Item $_.FullName -Recurse -Force}
+                  ForEach-Object {Remove-Item $_.FullName -Recurse -Force}
 }
 
 function download{
