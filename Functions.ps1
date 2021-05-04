@@ -1,3 +1,15 @@
+function Get-History{
+    [Cmdletbinding()]
+    Param([Parameter(Mandatory = $false)] $Search)
+    import-module PSSQLite
+    $db = "C:\Users\%USERNAME%\AppData\Local\Google\Chrome\User Data\Default\databases "
+    
+    if($Search){
+        Invoke-SQLiteQuery -DataSource $db -Query "SELECT url FROM ******** WHERE url LIKE '%$Search%'" 
+    } else {
+        Invoke-SQLiteQuery -DataSource $db -Query "SELECT url FROM ********"
+    }
+}
 
 function Copy-ADGroupFromMirror {
     param ()
@@ -183,16 +195,8 @@ function download{
 }
 
 <#
- Convert the plain text password to a secure strsword | ConvertTo-SecureString -AsPlainText -Force
- ing.
-
-@('user_a','user_b') | ForEach-Object {.\Reset-ADUserPassword.ps1 -username $PSItem}
-
-Get-Content .\users.txt | ForEach-Object {.\Reset-ADUserPassword.ps1 -username $PSItem}
-
-
-Get-DnsClientCache
-Get-DnsClient
-
-Start-Process powershell.exe -Credential $Credential -ArgumentList ("-file $args")
-#>
+ #   Get-DnsClientCache
+ #   Get-DnsClient
+ #   Get-WindowsFeature -Name *DNS*
+ #   Start-Process powershell.exe -Credential $Credential -ArgumentList ("-file $args")
+ #>
