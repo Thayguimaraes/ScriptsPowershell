@@ -24,13 +24,19 @@ function Copy-ADGroupFromMirror {
 
 Copy-ADGroupFromMirror
 
-$reference =  Get-ADUser -Identity DE6400256 -Properties MemberOf
+$reference =  Get-ADUser -Identity DE0181955 -Properties MemberOf 
 $groups = $reference.MemberOf
 
-$separate = $groups | Select-String -Pattern "SafeDoc_431"
-$separate | Add-ADGroupMember -Members DE8900060
+$separate = $groups | Select-String -Pattern "N1"
+$separate 
+
+| Add-ADGroupMember -Members DE8900060
 
 [AD]$groups.GetType()
+
+$reference = Get-ADUser -Identity DE0181955 -Properties MemberOf | Where-object {$_.MemberOf -like "*N1*"}
+$groups = $reference.MemberOf
+$separate
 
 function Initialize-MainPrograms {
     Invoke-Item -Path "C:\Users\de0186679\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Avaya\Avaya Aura Agent Desktop 6.0.appref-ms"
@@ -184,12 +190,15 @@ function clear-TeamsCache{
 }
 
 function download{
-    $dest = "http://resources.kodakalaris.com/docimaging/drivers/ST_i900_v1.8.52.exe"
+    $dest = "https://download-eu.drivers.plus/download/rUjvPcE611qSsAFvWQD-zg/1620217120/9/a/e/0/f/XPSCardPrinter_6.2.456.exe"
     $proxy = ([System.Net.WebRequest]::GetSystemWebproxy()).GetProxy($dest)
-    Invoke-WebRequest http://resources.kodakalaris.com/docimaging/drivers/ST_i900_v1.8.52.exe `
+    Invoke-WebRequest https://download-eu.drivers.plus/download/rUjvPcE611qSsAFvWQD-zg/1620217120/9/a/e/0/f/XPSCardPrinter_6.2.456.exe `
                       -Proxy $proxy `
                       -ProxyUseDefaultCredentials
 }
+
+
+Get-ADUser -Filter * | Where-Object {$_.SamAccountName -like "tr*"} |Export-Csv C:\Users\de0186679\Desktop\tr.csv
 
 <#
  #   Get-DnsClientCache
