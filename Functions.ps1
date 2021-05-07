@@ -11,6 +11,43 @@ function Get-History{
     }
 }
 
+function Uninstall-Office{
+    schtasks.exe /delete /tn "\Microsoft\Office\Office Automatic Updates"
+    schtasks.exe /delete /tn "\Microsoft\Office\Office Subscription Maintenance"
+    schtasks.exe /delete /tn "\Microsoft\Office\Office ClickToRun Service Monitor"
+    schtasks.exe /delete /tn "\Microsoft\Office\OfficeTelemetryAgentLogOn2016"
+    schtasks.exe /delete /tn "\Microsoft\Office\OfficeTelemetryAgentFallBack2016"
+    
+    Get-Process | Where-Object {$_.Name -match "OfficeClickToRun"} | Stop-Process
+    Get-Process | Where-Object {$_.Name -match "OfficeC2RClient"} | Stop-Process
+    Get-Process | Where-Object {$_.Name -match "AppVShNotify"} | Stop-Process
+    Get-Process | Where-Object {$_.Name -match "setup*"} | Stop-Process
+    Get-Process | Where-Object {$_.Name -match "outlook"} | Stop-Process
+    Get-Process | Where-Object {$_.Name -match "skype"} | Stop-Process
+    Get-Process | Where-Object {$_.Name -match "word"} | Stop-Process
+    Get-Process | Where-Object {$_.Name -match "PowerPoint"}| Stop-Process
+    Get-Process | Where-Object {$_.Name -match "Excel"} | Stop-Process
+    
+    sc delete ClickToRunSvc
+    
+    Remove-Item -Recurse -Force "C:/ProgramFiles/Microsoft Office 16"
+    Remove-Item -Recurse -Force "C:/ProgramFiles/Microsoft Office"
+    Remove-Item -Recurse -Force "C:/ProgramFiles(x86)/Microsoft Office"
+    Remove-Item -Recurse -Force "C:/CommonProgramFiles/Microsoft Shared/ClickToRun"
+    Remove-Item -Recurse -Force "C:/ProgramData/Microsoft\ClickToRun"
+    Remove-Item -Recurse -Force "C:/ProgramData/Microsoft\Office\ClickToRunPackagerLocker"
+    
+    
+    Remove-Item -Path HKLM:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun
+    Remove-Item -Path HKLM:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\AppVISV
+    Remove-Item -Path HKLM:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Office <Edition> - en-us
+    Remove-Item -Path HKLM:HKEY_CURRENT_USER\Software\Microsoft\Office
+    
+    MsiExec.exe /X{90160000-008F-0000-1000-0000000FF1CE}
+    MsiExec.exe /X{90160000-008C-0000-0000-0000000FF1CE}
+    MsiExec.exe /X{90160000-008C-0409-0000-0000000FF1CE}
+}
+
 function Copy-ADGroupFromMirror {
     Set-ExecutionPolicy Unrestricted
 
